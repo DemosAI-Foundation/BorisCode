@@ -1,97 +1,287 @@
+---
+title: "OpenCode: The God-Tier Boris Workflow"
+description: "Implementing all 45 of Boris Cherny's Claude Code tips natively in OpenCode using Agents, Plugins, Commands, and the SDK."
+author: "OpenCode Orchestration Guide"
+---
 
+# OpenCode: The "God-Tier" Boris Workflow
 
+To truly implement all 45 of Boris Cherny’s tips in OpenCode, we have to stop treating the AI as a chatbot and start treating it as a **programmable, event-driven orchestration engine**. 
 
-# 4 Our team shares a single http://CLAUDE.md for the Claude Code repo. We check it into git, and the whole team contributes multiple times a week. Anytime we see Claude do something incorrectly we add it to the http://CLAUDE.md, so Claude knows not to do it next time.
-Pic text:
-xlaude-cli $ cat CLAUDE.md
-# Development Workflow
+Using OpenCode’s native primitives—**Plugins (Event Hooks), the JS SDK, Headless CLI (`run`), Subagents, and Commands**—we can automate almost every single manual workflow Boris described.
 
-sh
-1. Make changes
+---
 
-2. Typecheck (fast)
-bun run typecheck
+## Part 1: The Autonomous Brain (Memory, Planning, & Agents)
+*Covers Tips: 3, 4, 6, 15, 19, 32, 45*
 
-3. Run tests
-bun run test -- -t "test name"
-bun run test:file -- "glob"
+Boris relies heavily on `CLAUDE.md` and manual memory management. Let's make memory, planning, and code review 100% autonomous.
 
-Single suite
-Specific files
+### 1. Auto-Dream & Auto-Memory Plugin (`.opencode/plugins/auto-dream.ts`)
+*(Tips 4, 15, 45)*
+Instead of manually updating `AGENTS.md`, this plugin listens for when a session ends or compacts, and uses the SDK to spawn a background agent that silently extracts learnings into your project's memory.
 
-bun run lint:file -- "file1.ts"
-bun run lint
+```typescript
+import type { Plugin } from "@opencode-ai/plugin"
 
-Specific files
-All files
+export const AutoDreamPlugin: Plugin = async ({ client, $ }) => {
+  return {
+    "session.deleted": async (event) => { // Triggered when you close/delete a session
+      // Headless auto-memory extraction
+      await client.app.log({ 
+        body: { service: "auto-dream", level: "info", message: "Extracting session memory..." } 
+      });
+      
+      // Spawns a background OpenCode process to update AGENTS.md automatically
+      await $`opencode run --agent explore "Review session ${event.sessionID}. Extract 1 new engineering rule we learned. Append it to AGENTS.md silently." &`
+    }
+  }
+}
+```
 
-5. Before creating PR
-bun run lint:claude && bun run test
+### 2. The Architect Auto-Handoff Agent (`.opencode/agents/architect.md`)
+*(Tips 3, 6, 19)*
+Don't just plan manually. Force the agent to plan, and upon your approval, autonomously hand the work off to the `build` agent.
 
-** Always use bun`, not npm`.
+```yaml
+---
+description: Plans complex tasks, then automatically triggers the build agent
+mode: primary
+permission:
+  edit: deny # Cannot write code
+  task:
+    build: allow # Can spawn the build agent
+---
+1. Write a detailed implementation plan.
+2. Ask me if it looks good.
+3. Once I say "yes", you MUST immediately use your `task` tool to invoke the `build` agent, passing it the exact plan so it can implement it autonomously.
+```
 
-*
+### 3. The CI/CD Code Reviewer
+*(Tip 32)*
+Use the OpenCode GitHub Action. You don't even need to ask it to review. It just does it when a PR opens.
 
-4. Lint before committing
+```yaml
+# .github/workflows/opencode-review.yml
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: anomalyco/opencode/github@latest
+        with:
+          model: anthropic/claude-3-5-sonnet-20241022
+          agent: explore # Read-only, safe
+          prompt: "Hunt for logic errors, security issues, and performance regressions. Comment inline."
+```
 
+---
 
-# 5 During code review, I will often tag @.claude on my coworkers' PRs to add something to the http://CLAUDE.md as part of the PR. We use the Claude Code Github action (/install-github-action) for this. It's our version of 
-@danshipper
-'s Compounding Engineering
-Pictext:
-1. Read current CLAUDE.md to understand existing guidance
+## Part 2: The Parallel Task Engine (Commands & CLI)
+*Covers Tips: 1, 5, 13, 28, 29, 30, 31, 33, 43*
 
-2. Update CLAUDE.md to strengthen  guidance
-3. Commit the change
+Boris uses multiple terminal tabs. We can use OpenCode's **Commands** with inline `bash (!)` evaluation to automate worktrees, batch jobs, and background loops.
 
-4. Adding guidance to CLAUDE.md
+### 1. The `/batch` Worktree Spawner (`.opencode/commands/batch.md`)
+*(Tips 1, 28, 30)*
 
-5. Updated CLAUDE.md
+```markdown
+---
+description: Fans out a migration task to parallel git worktrees
+---
+I want to execute a batch migration: "$ARGUMENTS"
 
-# 6/ Most sessions start in Plan mode (shift+tab twice). If my goal is to write a Pull Request, I will use Plan mode, and go back and forth with Claude until I like its plan. From there, I switch into auto-accept edits mode and Claude can usually 1-shot it. A good plan is really important!
+Do the following using your `bash` tool:
+1. Identify the files to migrate.
+2. Create 3 new `git worktree` directories (e.g., `../worktree-1`).
+3. In each worktree, spawn a headless agent in the background:
+   `cd ../worktree-1 && opencode run --agent build "Migrate these files, test, and commit" &`
+```
 
+### 2. The `/loop` / `/schedule` Daemon (`.opencode/commands/loop.md`)
+*(Tips 13, 31, 43)*
+If you close your laptop, local loops die. We can fix this by writing a command that utilizes `nohup` (or by using the ecosystem plugin `opencode-scheduler`).
 
-# 7/ I use slash commands for every "inner loop" workflow that I end up doing many times a day. This saves me from repeated prompting, and makes it so Claude can use these workflows, too. Commands are checked into git and live in .claude/commands/.
+```markdown
+---
+description: Spawns a background worker to run a task on an interval
+---
+Write and execute a bash script using `nohup` that runs the following OpenCode task every $1 seconds in the background:
+`opencode run --agent build "$2"`
+Ensure it survives when I close this terminal.
+```
 
-For example, Claude and I use a /commit-push-pr slash command dozens of times every day. The command uses inline bash to pre-compute git status and a few other pieces of info to make the command run quickly and avoid back-and-forth with the model (https://code.claude.com/docs/en/slash-commands#bash-command-execution)
+### 3. The `/btw` & `/simplify` Commands (`.opencode/commands/btw.md`)
+*(Tips 5, 29, 33)*
 
+```markdown
+---
+description: Ask a question without breaking context (uses subtask)
+agent: explore
+subtask: true
+---
+Answer this without modifying any files: $ARGUMENTS
+```
 
+---
 
-# 8/ I use a few subagents regularly: code-simplifier simplifies the code after Claude is done working, verify-app has detailed instructions for testing Claude Code end to end, and so on. Similar to slash commands, I think of subagents as automating the most common workflows that I do for most PRs.
+## Part 3: The Self-Healing Terminal (Plugins & Verification)
+*Covers Tips: 7, 10, 12, 14, 24, 37, 41*
 
-https://code.claude.com/docs/en/sub-agents
+Boris’s #1 tip is "Verification". Instead of asking the agent to verify, we can use the SDK to **force** verification upon file edits.
 
-agent examples:
-build-validator.md
-code-architect.md
-code-simplifier.md
-oncall-guide.md
-verify-app.md
+### 1. The Self-Healing / Auto-Format Plugin (`.opencode/plugins/self-healing.ts`)
+*(Tips 7, 10, 14, 24, 37, 41)*
 
+```typescript
+import type { Plugin } from "@opencode-ai/plugin"
 
+export const SelfHealingPlugin: Plugin = async ({ client, $, directory }) => {
+  return {
+    // Tip 7 & 41: PostToolUse Hook for Auto-formatting
+    "tool.execute.after": async (input, output) => {
+      if (input.tool === "edit" || input.tool === "write") {
+        try {
+          // Tip 14: Verification. Auto-run tests on edit!
+          await $`bun run format && bun test`
+        } catch (e) {
+          // Tip 24 & 10: If tests fail, automatically inject the error back into the LLM context!
+          await client.session.prompt({
+            path: { id: input.sessionID },
+            body: {
+              parts: [{ type: "text", text: `Your last edit broke the tests. Fix it. Error: ${e.message}` }]
+            }
+          })
+        }
+      }
+    },
+    // Tip 37: Setup Scripts for Environments
+    "session.created": async () => {
+      await $`npm install` // Ensure env is always ready
+    }
+  }
+}
+```
 
-# 9/ We use a PostToolUse hook to format Claude's code. Claude usually generates well-formatted code out of the box, and the hook handles the last 10% to avoid formatting errors in CI later.
+### 2. The Bug Fixer / MCP Integrator (`.opencode/commands/fix-bug.md`)
+*(Tips 9, 12)*
 
+```markdown
+---
+description: Fixes a bug from a Slack thread using Sentry logs
+---
+1. Use the `slack` MCP tool to read the thread: $1
+2. Use the `sentry` MCP tool to fetch the related error logs.
+3. Fix the bug, write a test, and verify it passes.
+```
 
-# 10/ I don't use --dangerously-skip-permissions. Instead, I use /permissions to pre-allow common bash commands that I know are safe in my environment, to avoid unnecessary permission prompts. Most of these are checked into .claude/settings.json and shared with the team.
+---
 
+## Part 4: Security & "Auto Mode"
+*Covers Tips: 8, 20, 21, 42*
 
-# 11/ Claude Code uses all my tools for me. It often searches and posts to Slack (via the MCP server), runs BigQuery queries to answer analytics questions (using bq CLI), grabs error logs from Sentry, etc. The Slack MCP configuration is checked into our .mcp.json and shared with the team.
+Anthropic uses proprietary classifiers for "Auto Mode". We replicate this safety autonomously using OpenCode's glob permissions and ecosystem sandboxing.
 
+### 1. Glob-based Pre-approvals (`opencode.json`)
+*(Tips 8, 20, 42)*
 
-# 12/ For very long-running tasks, I will either (a) prompt Claude to verify its work with a background agent when it's done, (b) use an agent Stop hook to do that more deterministically, or (c) use the ralph-wiggum plugin (originally dreamt up by 
-@GeoffreyHuntley
-). I will also use either --permission-mode=dontAsk or --dangerously-skip-permissions in a sandbox to avoid permission prompts for the session, so Claude can cook without being blocked on me.
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "bun test*": "allow",
+      "npm run build*": "allow"
+    },
+    "external_directory": {
+      "~/projects/**": "allow" 
+    }
+  }
+}
+```
 
-https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-wiggum
+### 2. Sandboxing via Ecosystem Plugin
+*(Tip 21)*
+Instead of Anthropic's local sandbox, install the `opencode-daytona` plugin (from the OpenCode ecosystem). It automatically spins up an isolated Docker/Cloud sandbox for the session to run in, ensuring 100% safety.
 
-https://code.claude.com/docs/en/hooks-guide
+---
 
+## Part 5: Omni-Channel Accessibility (Web, Mobile, Integrations)
+*Covers Tips: 9, 18, 35, 36, 44*
 
-# 13/ A final tip: probably the most important thing to get great results out of Claude Code -- give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result.
+Boris talks about remote control, iMessage, and Voice. Here is how OpenCode does it natively:
 
-Claude tests every single change I land to http://claude.ai/code using the Claude Chrome extension. It opens a browser, tests the UI, and iterates until the code works and the UX feels good.
+### 1. Remote Control & Mobile App 
+*(Tips 18, 35, 44)*
+Instead of an iMessage plugin, use OpenCode's native Web UI and attach it to your network.
 
-Verification looks different for each domain. It might be as simple as running a bash command, or running a test suite, or testing the app in a browser or phone simulator. Make sure to invest in making this rock-solid.
+```bash
+# Run this on your desktop
+opencode web --hostname 0.0.0.0 --port 4096
 
-https://code.claude.com/docs/en/chrome
+# Now, open your iPhone browser, go to http://[YOUR-IP]:4096. 
+# You now have full remote control over your desktop agent from your phone.
+```
+*(Alternative: Install the `kimaki` plugin from the ecosystem to control OpenCode via a Discord bot from your phone).*
+
+### 2. Voice Mode & MCPs
+*(Tips 9, 36)*
+While OpenCode TUI lacks a native mic button, the **OpenCode IDE Extension** (VS Code/Cursor) integrates with the OS seamlessly. Alternatively, use standard OS dictation (`Fn` x2 on Mac) right into the OpenCode TUI composer.
+
+---
+
+## Part 6: UI, Effort, & UX Customization
+*Covers Tips: 2, 11, 16, 17, 22, 23, 25, 26, 27, 34, 38, 39, 40*
+
+We configure all of this in two files: `opencode.json` (Logic) and `tui.json` (Visuals).
+
+### 1. TUI & Keybinds (`tui.json`)
+*(Tips 11, 16, 23, 25, 27, 40)*
+
+```json
+{
+  "$schema": "https://opencode.ai/tui.json",
+  "theme": "system", 
+  "scroll_acceleration": { "enabled": true },
+  "keybinds": {
+    "leader": "ctrl+x",
+    "variant_cycle": "ctrl+t"
+  }
+}
+```
+*(Tip 40 & 11: The "system" theme perfectly adapts to your terminal colors to provide a native aesthetic).*
+
+### 2. Model Selection & Effort Max (`opencode.json`)
+*(Tips 2, 17, 26, 34)*
+We define model "Variants" to represent Effort levels dynamically.
+
+```json
+{
+  "model": "anthropic/claude-3-5-sonnet-20241022",
+  "provider": {
+    "anthropic": {
+      "models": {
+        "claude-3-5-sonnet-20241022": {
+          "variants": {
+            "high": { "thinking": { "type": "enabled", "budgetTokens": 16000 } },
+            "max": { "thinking": { "type": "enabled", "budgetTokens": 32000 } }
+          }
+        }
+      }
+    }
+  }
+}
+```
+*(Tip 34: Press `Ctrl+T` to cycle your effort to "max" using the variant keybind).*
+
+### 3. Session Naming & Status Lines
+*(Tips 22, 38, 39)*
+OpenCode automatically uses its built-in background `title` agent to name sessions (Tip 39). If you want to name it manually at launch (Tip 38):
+
+```bash
+opencode --title "Database Migration"
+```

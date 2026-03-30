@@ -1,6 +1,6 @@
 # BorisCode for OpenCode
 
-*Boris in your pocket!*
+## *Boris in your terminal!*
 
 **Workflow and setup based on Boris Cherny's CladeCode setup but made for [OpenCode](https://opencode.ai).**
 

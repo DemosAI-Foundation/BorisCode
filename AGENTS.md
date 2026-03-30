@@ -115,19 +115,17 @@ Plugins can be:
 
 ### code-reviewer
 
+- When you finish building a complex feature, ALWAYS invoke the code-reviewer subagent via your Task tool to clean up your work.
 - Reviews code for best practices and potential issues
 - Delegates security tasks to `security-engineer`
 - Cannot write or edit files (tools disabled)
 
 ### security-engineer
 
-- Performs security audits and identifies vulnerabilities
+- When you finish building a complex feature: perform security audits and identify vulnerabilities
 - Checks for: input validation, authentication flaws, data exposure, dependency vulnerabilities, config security, cryptographic weaknesses
 - Cannot write or edit files (tools disabled)
 - Runs as a subagent (called by other agents)
-
-### code-simplifier
-- When you finish building a complex feature, ALWAYS invoke the code-simplifier subagent via your Task tool to clean up your work.
 
 ## Provider Conventions
 
@@ -157,9 +155,3 @@ The `.gitignore` excludes:
 - Local providers (myprovider, llamacpp) require running services at their specified URLs
 
 ## Recent Lessons Learned
-
-- **Implementation:** 
-  - Boris: Read-only routing agent with intelligent task delegation logic
-  - Build: Execution agent with edit/write/bash permissions
-  - Boris routes simple tasks directly to @build, complex tasks through plan then →@staff-engineer then → @build
-- **Prevention:** Use personality-driven names for agents that reflect their role and behavior

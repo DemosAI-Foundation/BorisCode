@@ -1,14 +1,24 @@
 # BorisCode for OpenCode
 
+*Boris in your pocket!*
+
 **Workflow and setup based on Boris Cherny's CladeCode setup but made for [OpenCode](https://opencode.ai).**
 
 BorisCode automates and extends OpenCodes functionality. 
 
-Automatically learns from mistakes, plans, reviews code, reviews security etc. 
+Automatically learns from mistakes, plans, critiques, reviews code, reviews security etc. 
 
 Based on Boris twitter threads and howborisusesclaudecode.com wherefrom ideas and practices has been HAND PICKED and implemented with lastest best practices for local LLM usage with OpenCode. Further automation over Borises practices has been implemented since it is possible in OpenCode.
 
 ### Includes also the DCP plugin which is essential for local llm: https://github.com/Opencode-DCP/opencode-dynamic-context-pruning
+
+
+---
+
+## ToDo:
+
+-Delegate planning to free powerful model
+-Automatic git commits
 
 ---
 

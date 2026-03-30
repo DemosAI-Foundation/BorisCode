@@ -34,7 +34,7 @@
     },
     "challenge": {
       "description": "Forces the agent to critically review the current branch against main",
-      "agent": "security-engineer",
+      "agent": "staff-engineer",
       "template": "Run `!git diff main...HEAD`. Do NOT agree with me. Play the role of a strict Staff Engineer. Grill me on these changes. Find edge cases, performance bottlenecks, and security flaws."
     }
   },

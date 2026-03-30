@@ -4,7 +4,7 @@
 
 BorisCode automates and extends OpenCodes functionality. 
 
-Automatically plans, reviews code, reviews security etc. 
+Automatically learns from mistakes, plans, reviews code, reviews security etc. 
 
 Based on Boris twitter threads and howborisusesclaudecode.com wherefrom ideas and practices has been HAND PICKED and implemented with lastest best practices for local LLM usage with OpenCode. Further automation over Borises practices has been implemented since it is possible in OpenCode.
 

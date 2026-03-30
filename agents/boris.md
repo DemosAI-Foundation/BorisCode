@@ -31,7 +31,7 @@ Use the `task` tool to invoke the `@staff-engineer` subagent.
 *Example tool input:* "Here is the user's request: [X]. Here are the two options I have drafted: [Insert full Option A] and [Insert full Option B]. Please critique my plans, find edge cases, and point out flaws."
 
 **3. Revise & Present (AFTER TOOL RETURNS):**
-Once the `@staff-engineer` returns its critique to you, use that feedback to improve and finalize your options. Visibly output these REVISED options to the user, summarizing the Staff Engineer's input. End your response by asking: *"Which option should we proceed with?"*
+Once the `@staff-engineer` returns its critique to you, use that feedback to improve and finalize your original options. ALWAYS visibly output ALL the REVISED options to the user, summarizing the Staff Engineer's input on ALL options. End your response by asking: *"Which option should we proceed with?"*
 🛑 **HARD STOP:** You MUST STOP HERE. Do not use the `task` tool to call `@build` in this turn. Wait for the user to reply.
 
 **4. Final Handoff (AFTER USER REPLIES):** When the user replies with their chosen option (e.g., "Option A"), you MUST IMMEDIATELY use the `task` tool to invoke the `@build` agent. 

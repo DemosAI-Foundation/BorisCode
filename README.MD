@@ -3,7 +3,9 @@
 BorisCode automatically learns from mistakes, plans, critiques, reviews code, reviews security etc.
 
 **Based on Boris Cherny's personal CladeCode setup, but translated for [OpenCode](https://github.com/anomalyco/opencode).**
-Boris twitter threads and howborisusesclaudecode.com as source and implemented with lastest best practices for local LLM usage with OpenCode. Further automation over Boris's practices has been implemented!
+Boris twitter threads and howborisusesclaudecode.com used as source. 
+Tips implemented with lastest best practices for local LLM usage with OpenCode. 
+Further automation over Boris's practices has been implemented!
 
 **Includes also the DCP context plugin which is essential for local llm:* [OpenCode-DCP]https://github.com/Opencode-DCP/opencode-dynamic-context-pruning.**
 

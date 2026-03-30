@@ -1,16 +1,11 @@
-# BorisCode for OpenCode
-
 ## *Boris in your terminal!*
 
-**Workflow and setup based on Boris Cherny's CladeCode setup but made for [OpenCode](https://opencode.ai).**
+BorisCode automatically learns from mistakes, plans, critiques, reviews code, reviews security etc.
 
-BorisCode automates and extends OpenCodes functionality. 
+**Based on Boris Cherny's personal CladeCode setup, but translated for [OpenCode](https://github.com/anomalyco/opencode).**
+Boris twitter threads and howborisusesclaudecode.com as source and implemented with lastest best practices for local LLM usage with OpenCode. Further automation over Boris's practices has been implemented!
 
-Automatically learns from mistakes, plans, critiques, reviews code, reviews security etc. 
-
-Based on Boris twitter threads and howborisusesclaudecode.com wherefrom ideas and practices has been HAND PICKED and implemented with lastest best practices for local LLM usage with OpenCode. Further automation over Borises practices has been implemented since it is possible in OpenCode.
-
-### Includes also the DCP plugin which is essential for local llm: https://github.com/Opencode-DCP/opencode-dynamic-context-pruning
+**Includes also the DCP context plugin which is essential for local llm:* [OpenCode-DCP]https://github.com/Opencode-DCP/opencode-dynamic-context-pruning.**
 
 
 ---
@@ -37,7 +32,7 @@ BorisCode includes custom slash commands:
 ## How it Works (Under the Hood)
 
 BorisCode leverages OpenCode's **Auto-Discovery** and the **`task` tool**. 
-By setting `"task": "allow"` in the `opencode.jsonc` permissions, agents are granted the ability to seamlessly swap contexts. When `@boris` finishes planning, it autonomously executes a tool call to hand its context window over to `@build` or `@staff-engineer` without requiring you to manually switch agents.
+When `@boris` finishes, it autonomously executes an appropriate tool call to hand its context window over without requiring you to manually switch between all the different agents.
 
 ---
 *Built for the [OpenCode](https://opencode.ai) Ecosystem.*

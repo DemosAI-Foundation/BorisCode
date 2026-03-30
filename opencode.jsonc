@@ -1,0 +1,63 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "disabled_providers": [
+    "myprovider"
+  ],
+  "default_agent": "boris",
+  "formatter": {
+    "prettier": {
+      "extensions": [".js", ".ts", ".jsx", ".tsx"]
+    },
+    "oxfmt": {
+      "disabled": false
+    }
+  },
+  "permission": {
+    "bash": {
+      "git status*": "allow",
+      "git diff*": "allow",
+      "npm test": "allow",
+      "rm -rf *": "deny",
+      "*": "ask"
+    },
+    "doom_loop": "allow"
+  },
+  "plugin": [
+    "@tarquinen/opencode-dcp@latest",
+    "opencode-todo-reminder"
+  ],
+  "command": {
+    "simplify": {
+      "description": "Reviews current uncommitted changes for efficiency",
+      "agent": "code-reviewer",
+      "template": "Look at `!git diff`. Review the code for compliance, simplify it to reduce duplicate logic, and present the refactored diff for my approval."
+    },
+    "challenge": {
+      "description": "Forces the agent to critically review the current branch against main",
+      "agent": "security-engineer",
+      "template": "Run `!git diff main...HEAD`. Do NOT agree with me. Play the role of a strict Staff Engineer. Grill me on these changes. Find edge cases, performance bottlenecks, and security flaws."
+    }
+  },
+  "provider": {
+    "myprovider": {
+      "name": "Myprovider",
+      "npm": "@ai-sdk/openai-compatible",
+      "models": {
+        "1": { "name": "qwen" }
+      },
+      "options": {
+        "baseURL": "http://127.0.0.1/completions/v1"
+      }
+    },
+    "llamacpp": {
+      "name": "LLama",
+      "npm": "@ai-sdk/openai-compatible",
+      "models": {
+        "1": { "name": "Qwen" }
+      },
+      "options": {
+        "baseURL": "http://127.0.0.1:8083/v1"
+      }
+    }
+  }
+}

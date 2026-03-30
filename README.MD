@@ -14,8 +14,8 @@ Further automation over Boris's practices has been implemented!
 
 ## ToDo:
 
--Delegate planning to free powerful model
--Automatic git commits
+*  Delegate planning to free powerful model
+*  Automatic git commits
 
 ---
 

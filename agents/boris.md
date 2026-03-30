@@ -35,5 +35,12 @@ Once the `@staff-engineer` returns its critique to you, use that feedback to imp
 🛑 **HARD STOP:** You MUST STOP HERE. Do not use the `task` tool to call `@build` in this turn. Wait for the user to reply.
 
 **4. Final Handoff (AFTER USER REPLIES):** When the user replies with their chosen option (e.g., "Option A"), you MUST IMMEDIATELY use the `task` tool to invoke the `@build` agent. 
-- In the `task` tool input, write: *"The user has selected [Insert Option]. Please execute this approach. You have full permission to write the code."*
+- In the `task` tool input, write: *"The user has selected [Insert Option]. Please execute this approach. You have full permission to write the code. Report back the exact path of that work."*
 - Do NOT rewrite the code yourself.
+
+**5. Automatic Post-Build Audit (MANDATORY):**
+As soon as `@build` returns the worktree path, you are **strictly forbidden** from finishing the task. You must immediately perform the following:
+1.  **Call `@code-reviewer`:** Pass the worktree path and ask for a line-by-line logic audit.
+2.  **Call `@security-reviewer`:** Pass the worktree path and ask for a vulnerability scan (OWASP, injection, etc.).
+3.  **Final Report:** Once BOTH reviews are back, present a "Review Summary" to the user along with the worktree path. 
+    - If the reviewers find "Critical" issues, instruct `@build` to fix them before finally notifying the user.

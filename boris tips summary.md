@@ -1,6 +1,6 @@
 # Boris Cherny's Claude Code Workflow Tips
 
-**57 tips** across 45 topics, sourced from Boris Cherny (creator of Claude Code) and the Claude Code team at Anthropic. All tips are contained in this file — do not fetch from the website. Remember: everyone's setup is different. Experiment to see what works for you!
+
 
 **Parts:** The tips were shared across 8 threads:
 - **Part 1** (Jan 2, 2026, 13 tips): Sections 1–14 — parallel execution, web/mobile, Opus, CLAUDE.md, @.claude, plan mode, slash commands, subagents, hooks, permissions, MCP, long-running tasks, verification
@@ -42,6 +42,8 @@ Beyond the terminal, run additional sessions on claude.ai/code. Use:
 - Claude iOS app to start sessions on the go, pick them up on desktop later
 
 ---
+
+
 
 ## 3. Plan Mode
 
@@ -127,7 +129,7 @@ Think of subagents as automations for the most common PR workflows:
 - `verify-app` - Detailed instructions for end-to-end testing
 
 ### Leveraging Subagents
-- Append "use subagents" to any request where you want Claude to throw more compute at the problem
+- Have ClaudeCode or OpenCode figure out what to Append to "use subagents" to any request where you want to throw more compute at the problem
 - Offload individual tasks to subagents to keep your main agent's context window clean and focused
 - Route permission requests to Opus 4.5 via a hook - let it scan for attacks and auto-approve the safe ones
 
@@ -136,7 +138,7 @@ Think of subagents as automations for the most common PR workflows:
 ## 7. Hooks
 
 ### PostToolUse Hooks for Formatting
-Use a PostToolUse hook to auto-format Claude's code. While Claude generates well-formatted code 90% of the time, the hook catches edge cases to prevent CI failures.
+Use a PostToolUse hook to auto-format Claude's code. While Claude generates well-formatted code 90% of the time, the hook catches edge cases to prevent CI failures. In opencode you can hand it over to subagent! 
 
 ```json
 "PostToolUse": [
@@ -153,16 +155,9 @@ Use a PostToolUse hook to auto-format Claude's code. While Claude generates well
 ```
 
 ### Stop Hooks for Long-Running Tasks
-For very long-running tasks, use an agent Stop hook for deterministic checks, ensuring Claude can work uninterrupted.
+For very long-running tasks, use an agent Stop hook for deterministic checks, ensuring Claude can work uninterrupted. This is doom_loop on opencode!
 
----
 
-## 8. Permissions
-
-### Pre-Allow Safe Permissions
-Instead of `--dangerously-skip-permissions`, use `/permissions` to pre-allow common safe commands. Most are shared in `.claude/settings.json`.
-
-For sandboxed environments, use `--permission-mode=dontAsk` or `--dangerously-skip-permissions` to avoid blocks.
 
 ---
 
@@ -196,6 +191,8 @@ This works for any database that has a CLI, MCP, or API.
 
 ## 10. Prompting Tips
 
+##Have opencode automate these with agent handover:
+
 ### Challenge Claude
 - Say "Grill me on these changes and don't make a PR until I pass your test."
 - Say "Prove to me this works" and have Claude diff behavior between main and your feature branch
@@ -206,15 +203,12 @@ Say: "Knowing everything you know now, scrap this and implement the elegant solu
 ### Write Detailed Specs
 Reduce ambiguity before handing work off. The more specific you are, the better the output.
 
-**Key insight:** Don't accept the first solution. Push Claude to do better - it usually can.
+**Key insight:** Don't accept the first solution. Push Claude to do better - it usually can. Have OpenCode generate OPTIONS EVERYTIME
 
 ---
 
-## 11. Terminal Setup
+## 11. Voice dictation
 
-### Recommended Tools
-- **Ghostty** terminal - synchronized rendering, 24-bit color, proper unicode support
-- Use `/statusline` to customize your status bar to always show context usage and current git branch
 
 ### Voice Dictation
 Use voice dictation! You speak 3x faster than you type, and your prompts get way more detailed as a result. Hit `fn x2` on macOS.
@@ -240,13 +234,11 @@ For very long-running tasks, ensure Claude can work uninterrupted:
 **Options:**
 - **(a)** Prompt Claude to verify with a background agent when done
 - **(b)** Use an agent Stop hook for deterministic checks
-- **(c)** Use the "ralph-wiggum" plugin (community idea by @GeoffreyHuntley)
 
-For sandboxed environments, use `--permission-mode=dontAsk` or `--dangerously-skip-permissions` to avoid blocks.
 
 ---
 
-## 14. Verification (The #1 Tip)
+## 14. Verification of RESULTS (The #1 Tip and most important)
 
 ### Give Claude a Way to Verify Its Work
 "Probably the most important thing to get great results out of Claude Code - give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result."
@@ -271,52 +263,12 @@ The key is giving Claude a way to close the feedback loop. Invest in domain-spec
 
 **Key takeaway:** Claude Code isn't just for writing code - it's a powerful learning tool when you configure it to explain and teach.
 
----
 
-## 16. Terminal Configuration
 
-### Configure Your Terminal
-A few quick settings to make Claude Code feel right:
 
-- **Theme:** Run `/config` to set light/dark mode
-- **Notifications:** Enable notifications for iTerm2, or use a custom notifs hook
-- **Newlines:** If you use Claude Code in an IDE terminal, Apple Terminal, Warp, or Alacritty, run `/terminal-setup` to enable shift+enter for newlines (so you don't need to type `\`)
-- **Vim mode:** Run `/vim`
 
----
 
-## 17. Effort Level
 
-### Adjust Effort Level
-Run `/model` to pick your preferred effort level:
-
-- **Low** — less tokens & faster responses
-- **Medium** — balanced behavior
-- **High** — more tokens & more intelligence
-
-Boris uses High for everything.
-
----
-
-## 18. Plugins
-
-### Install Plugins, MCPs, and Skills
-Plugins let you install LSPs (now available for every major language), MCPs, skills, agents, and custom hooks.
-
-Install a plugin from the official Anthropic plugin marketplace, or create your own marketplace for your company. Then, check the `settings.json` into your codebase to auto-add the marketplaces for your team.
-
-Run `/plugin` to get started.
-
----
-
-## 19. Custom Agents
-
-### Create Custom Agents
-Drop `.md` files in `.claude/agents`. Each agent can have a custom name, color, tool set, pre-allowed and pre-disallowed tools, permission mode, and model.
-
-**Little-known feature:** Set the default agent used for the main conversation. Just set the `"agent"` field in your `settings.json` or use the `--agent` flag.
-
-Run `/agents` to get started.
 
 ---
 
@@ -329,41 +281,13 @@ Out of the box, we pre-approve a small set of safe commands. To pre-approve more
 
 **Wildcard syntax:** We support full wildcard syntax. Try `"Bash(bun run *)"` or `"Edit(/docs/**)"`.
 
----
 
-## 21. Sandboxing
-
-### Enable Sandboxing
-Opt into Claude Code's open source sandbox runtime to improve safety while reducing permission prompts.
-
-Run `/sandbox` to enable it. Sandboxing runs on your machine, and supports both file and network isolation.
-
-**Modes:**
-- Sandbox BashTool, with auto-allow
-- Sandbox BashTool, with regular permissions
-- No Sandbox
-
----
-
-## 22. Status Line
-
-### Add a Status Line
-Custom status lines show up right below the composer. Show model, directory, remaining context, cost, and anything else you want to see while you work.
-
-Everyone on the Claude Code team has a different statusline. Use `/statusline` to get started — Claude will generate one based on your `.bashrc`/`.zshrc`.
-
----
-
-## 23. Keybindings
-
-### Customize Your Keybindings
-Every key binding in Claude Code is customizable. Run `/keybindings` to re-map any key. Settings live reload so you can see how it feels immediately.
-
-Keybindings are stored in `~/.claude/keybindings.json`.
 
 ---
 
 ## 24. Hooks (Advanced)
+
+These need probably to be hardcoded or can they be automated with clever agent use?
 
 ### Set Up Hooks
 Hooks are a way to deterministically hook into Claude's lifecycle. Use them to:
@@ -374,36 +298,6 @@ Hooks are a way to deterministically hook into Claude's lifecycle. Use them to:
 
 Ask Claude to add a hook to get started.
 
----
-
-## 25. Spinner Verbs
-
-### Customize Your Spinner Verbs
-It's the little things that make CC feel personal. Ask Claude to customize your spinner verbs to add or replace the default list with your own verbs.
-
-Check the `settings.json` into source control to share verbs with your team.
-
----
-
-## 26. Output Styles
-
-### Use Output Styles
-Run `/config` and set an output style to have Claude respond using a different tone or format.
-
-- **Explanatory** — great when getting familiar with a new codebase, to have Claude explain frameworks and code patterns as it works
-- **Learning** — have Claude coach you through making code changes
-- **Custom** — create your own output styles to adjust Claude's voice the way you like
-
----
-
-## 27. Customize Everything
-
-### Customize All the Things!
-Claude Code is built to work great out of the box. When you do customize, check your `settings.json` into git so your team can benefit, too.
-
-We support configuring for your codebase, for a sub-folder, for just yourself, or via enterprise-wide policies.
-
-**By the numbers:** 37 settings and 84 env vars. Use the `"env"` field in your `settings.json` to avoid wrapper scripts.
 
 ---
 
@@ -446,6 +340,8 @@ Mercurial, Perforce, or SVN users can define `WorktreeCreate` and `WorktreeRemov
 
 ## 29. /simplify — Improve Code Quality
 
+Simplify code agent in OpenCode!
+
 Use parallel agents to improve code quality, tune code efficiency, and ensure CLAUDE.md compliance. Append `/simplify` to any prompt after making changes.
 
 ```
@@ -454,17 +350,7 @@ Use parallel agents to improve code quality, tune code efficiency, and ensure CL
 
 Boris uses this daily to shepherd PRs to production. The skill runs parallel agents that review changed code for reuse, quality, and efficiency — all in one pass.
 
----
 
-## 30. /batch — Parallel Code Migrations
-
-Interactively plan out code migrations, then execute in parallel using dozens of agents. Each agent runs with full isolation using git worktrees, testing its work before putting up a PR.
-
-```
-> /batch migrate src/ from Solid to React
-```
-
-You plan the migration interactively, then `/batch` fans out the work to parallel agents — each in its own worktree, each testing and creating a PR independently.
 
 ---
 
@@ -504,84 +390,12 @@ Claude responds inline without stopping its work. Built by @ErikSchluntz as a si
 
 Source: https://x.com/trq212/status/2031506296697131352
 
-## 34. /effort — Max Reasoning Mode
 
-Set effort to 'max' and Claude reasons for longer, using as many tokens as needed. Burns through usage limits faster, so you activate it per session.
+## 37. auto install dependencies to test projects
 
-```
-> /effort max
-```
+ 
 
-Four levels: low, medium (default), high, max. Use 'max' for hard debugging, architecture decisions, or tricky code where you want Claude to really think it through.
-
-Source: https://x.com/trq212/status/2032632596572811575
-
-## 35. Remote Control — Spawn New Sessions
-
-Run `claude remote-control` and spawn a new local session from the mobile app. Available on Max, Team, and Enterprise (v2.1.74+).
-
-```bash
-$ claude remote-control
-# Open Claude mobile app → tap "Code" → start new session
-```
-
-Walk away from your desk, think of something, kick off a task from mobile — Claude runs on your machine.
-
-Source: https://x.com/trq212/status/2032632597843779861
-
-## 36. Voice Mode
-
-Voice mode is now rolled out to 100% of users, including Claude Code Desktop and Cowork. Click the microphone icon and talk naturally.
-
-Useful for hands-free coding, dictating complex requirements, or when you think faster than you type.
-
-Source: https://x.com/trq212/status/2032632599429136753
-
-## 37. Setup Scripts for Cloud Environments
-
-Add a setup script in Claude Code on web and desktop. It runs before Claude Code launches on a cloud environment — install dependencies, configure settings, set env vars.
-
-```bash
-# Setup script (runs on new session start, skipped on resume):
-#!/bin/bash
-yarn install
-```
-
-Particularly useful for installing dependencies, settings, and configs before Claude starts working.
-
-Source: https://x.com/trq212/status/2032632601064907037
-
-## 38. claude --name — Name Your Sessions
-
-Name your session at launch with the `--name` flag.
-
-```bash
-$ claude --name "auth-refactor"
-```
-
-Especially useful when juggling multiple worktrees or sessions — you can tell at a glance which session is doing what.
-
-Source: https://x.com/trq212/status/2032632602629386348
-
-## 39. Auto Session Naming After Plan Mode
-
-After plan mode, Claude automatically names your session based on what you're working on. No manual naming needed.
-
-Pairs well with `claude --name` — use `--name` when you know what you're doing upfront, let auto-naming handle it when you start by planning.
-
-Source: https://x.com/trq212/status/2032632602629386348
-
-## 40. /color — Customize Prompt Color
-
-Change the color of the prompt input with `/color`. When you have 3-5 sessions open in different terminals, color-coding them makes it instantly clear which is which.
-
-```
-> /color
-```
-
-Source: https://x.com/trq212/status/2032632602629386348
-
-## 41. PostCompact Hook
+## 41. Reinject context with agent after Compact conversation
 
 A new hook event that fires after Claude compresses its conversation context. Use it to re-inject critical instructions that might get lost during compaction, log when compaction happens, or trigger automation.
 
@@ -596,21 +410,7 @@ A new hook event that fires after Claude compresses its conversation context. Us
 
 Source: https://x.com/trq212/status/2032632602629386348
 
-## 42. Auto Mode — Safer Permission Skipping
 
-Instead of approving every file write and bash command, or skipping permissions entirely, auto mode lets Claude make permission decisions on your behalf. Classifiers evaluate each action before it runs — safe operations get auto-approved, risky ones still get flagged.
-
-```bash
-# Enable auto mode
-claude --enable-auto-mode
-
-# Or cycle with shift+tab during a session:
-# plan mode → auto mode → normal mode
-```
-
-Boris's take: "no 👏 more 👏 permission prompts 👏"
-
-Source: https://x.com/bcherny/status/2036555259997462541
 
 ## 43. /schedule — Cloud Jobs from Your Terminal
 

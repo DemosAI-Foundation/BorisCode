@@ -7,7 +7,7 @@ Boris twitter threads and howborisusesclaudecode.com used as source.
 Tips implemented with lastest best practices for local LLM usage with OpenCode. 
 Further automation over Boris's practices has been implemented!
 
-**Includes also the DCP context plugin which is essential for local llm:* [OpenCode-DCP](https://github.com/Opencode-DCP/opencode-dynamic-context-pruning).**
+*Includes also the DCP context plugin which is essential for local llm:* [OpenCode-DCP](https://github.com/Opencode-DCP/opencode-dynamic-context-pruning)
 
 
 ---

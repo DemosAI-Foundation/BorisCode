@@ -24,7 +24,7 @@ Further automation over Boris's practices has been implemented!
 BorisCode includes custom slash commands:
 
 *   **`/simplify`**: Looks at your uncommitted `git diff`, summons the code-reviewer, and refactors your code to reduce duplicate logic.
-*   **`/challenge`**: Summons the stadd-engineer to look at your current branch vs `main` and aggressively grill you on your changes. 
+*   **`/challenge`**: Summons the Critic to look at your current branch vs `main` and aggressively grill you on your changes. 
 *   **`/loop`**: schedule recurring jobs (babysit PRs, summarize Slack) locally.
 *   **`ctrl+b`**: Mid-task side-chain questions without breaking flow.
 *   **`/teach`**: command that utilizes the webfetch tool and ascii diagramming.

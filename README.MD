@@ -13,7 +13,8 @@ Further automation over Boris's practices has been implemented!
 ---
 
 ## ToDo:
-
+*   token saving methods: only git diff, full code on demand. state machine: run agents separately. Context isolation
+* hard to impl: relay race machine, agent handover difficult via js sdk plugin
 *  Delegate planning to free powerful model
 *  Automatic git commits
 

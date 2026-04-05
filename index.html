@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Zelda Prototype</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui">
+            <div id="hearts">Hearts: <span id="heart-count">3</span></div>
+            <div id="inventory">Keys: <span id="key-count">0</span></div>
+        </div>
+        <div id="message-overlay" class="hidden">
+            <div id="message-text"></div>
+            <p>Press SPACE to continue</p>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

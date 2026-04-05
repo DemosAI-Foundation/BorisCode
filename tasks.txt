@@ -1,0 +1,5 @@
+# User: zelda-game
+## Task 1
+- Create project.godot file
+- Create .gitignore file
+- Create project structure folders

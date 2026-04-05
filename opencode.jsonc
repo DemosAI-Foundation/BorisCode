@@ -3,7 +3,7 @@
   "disabled_providers": [
     "myprovider"
   ],
-  "default_agent": "boris",
+  "default_agent": "router",
   "formatter": {
     "prettier": {
       "extensions": [".js", ".ts", ".jsx", ".tsx"]
